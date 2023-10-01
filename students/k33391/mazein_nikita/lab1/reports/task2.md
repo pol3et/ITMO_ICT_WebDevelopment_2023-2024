@@ -93,3 +93,9 @@ s.close()
 ```
 
 ##Демонстрация работы
+
+![task21](https://github.com/pol3et/ITMO_ICT_WebDevelopment_2023-2024/assets/80038191/329276ac-0703-4ed6-8259-347ea56cb1b2)
+
+![task22](https://github.com/pol3et/ITMO_ICT_WebDevelopment_2023-2024/assets/80038191/ae7ff9a8-eece-45b2-b699-e0d6dfb04d44)
+
+

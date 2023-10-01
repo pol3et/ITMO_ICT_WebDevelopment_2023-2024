@@ -90,3 +90,15 @@ if __name__ == "__main__":
 ```
 
 ##Демонстрация работы
+
+![task51](https://github.com/pol3et/ITMO_ICT_WebDevelopment_2023-2024/assets/80038191/a27aeb46-38ae-4dcf-9b4b-ca1213eb18f0)
+
+![task52](https://github.com/pol3et/ITMO_ICT_WebDevelopment_2023-2024/assets/80038191/23382052-82a2-411f-b408-ca17c558c730)
+
+![task53](https://github.com/pol3et/ITMO_ICT_WebDevelopment_2023-2024/assets/80038191/207c4624-6327-47d4-a943-905230fc941b)
+
+![task54](https://github.com/pol3et/ITMO_ICT_WebDevelopment_2023-2024/assets/80038191/9b284e6c-61a8-43b6-ad39-c14577be266a)
+
+
+
+

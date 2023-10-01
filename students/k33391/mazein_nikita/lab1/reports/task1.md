@@ -62,3 +62,5 @@ print('Received data from server:', data.decode('utf-8'))
 ```
 
 ##Демонстрация работы
+![task11](https://github.com/pol3et/ITMO_ICT_WebDevelopment_2023-2024/assets/80038191/09b2c265-9bb4-422a-a9c6-ee1d3a0757ab)
+![task12](https://github.com/pol3et/ITMO_ICT_WebDevelopment_2023-2024/assets/80038191/f51510f5-ef74-4d73-8620-048f17f18116)

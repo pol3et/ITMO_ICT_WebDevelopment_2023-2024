@@ -89,3 +89,9 @@ while True:
 ```
 
 ##Демонстрация работы
+
+![task31](https://github.com/pol3et/ITMO_ICT_WebDevelopment_2023-2024/assets/80038191/f1ff155b-b3f5-4195-879a-8d2a2d84852d)
+
+![task32](https://github.com/pol3et/ITMO_ICT_WebDevelopment_2023-2024/assets/80038191/f02cd7fc-7108-477a-80b3-713bc4582e61)
+
+

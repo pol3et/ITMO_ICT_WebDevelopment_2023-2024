@@ -3,9 +3,9 @@ import re
 import signal
 
 student_marks = {
-    "Bob": 85,
-    "Tom": 92,
-    "Shlick-Shlack": 78,
+    "Bob": [85],
+    "Tom": [92],
+    "Shlick-Shlack": [78],
 }
 
 html_template = """
@@ -33,7 +33,8 @@ html_template = """
 def generate_student_list():
     student_list = ""
     for name, marks in student_marks.items():
-        student_list += f"<li>{name}: {marks}</li>"
+        mark_str = ', '.join(map(str, marks))
+        student_list += f'<li> {name} : {mark_str}'
     return student_list
 
 def handle_request(request):
@@ -41,15 +42,20 @@ def handle_request(request):
     if request.startswith("GET"):
         response_body = html_template.format(student_list=generate_student_list())
         response = f"HTTP/1.1 200 OK\r\nContent-Length: {len(response_body)}\r\n\r\n{response_body}"
+
     elif request.startswith("POST"):
         match = re.search(r'name=(\w+)&marks=(\d+)', request).groups()
-        print(match)
+
         if match:
             post_data = match
-            name, marks = post_data[0], int(post_data[1])
-            student_marks[name] = marks
-            print(student_marks.items())
-            response = "HTTP/1.1 302 Found\r\nLocation: /"  # Redirect to the main page
+            name, mark = post_data[0], int(post_data[1])
+            if name in student_marks:
+                student_marks[name].append(mark)
+            else:
+                student_marks[name] = []
+                student_marks[name].append(mark)
+            response = "HTTP/1.1 302 Found\r\nLocation: /"
+
         else:
             response = "HTTP/1.1 400 Bad Request\r\nContent-Length: 0\r\n\r\n"
     else:

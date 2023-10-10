@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        
+        
+        
+        <link rel="shortcut icon" href="../img/favicon.ico">
+        <title>Task 4 - Lab 1</title>
+        <link href="../css/bootstrap.min.css" rel="stylesheet">
+        <link href="../css/font-awesome.min.css" rel="stylesheet">
+        <link href="../css/base.css" rel="stylesheet">
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css">
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+        <script>hljs.highlightAll();</script> 
+    </head>
+
+    <body>
+        <div class="navbar fixed-top navbar-expand-lg navbar-dark bg-dark">
+            <div class="container">
+                <a class="navbar-brand" href="..">Lab 1</a>
+                <!-- Expander button -->
+                <button type="button" class="navbar-toggler" data-toggle="collapse" data-target="#navbar-collapse">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+
+                <!-- Expanded navigation -->
+                <div id="navbar-collapse" class="navbar-collapse collapse">
+                        <!-- Main navigation -->
+                        <ul class="nav navbar-nav">
+                            <li class="navitem">
+                                <a href=".." class="nav-link">Home</a>
+                            </li>
+                            <li class="navitem">
+                                <a href="../task1/" class="nav-link">Task 1</a>
+                            </li>
+                            <li class="navitem">
+                                <a href="../task2/" class="nav-link">Task 2</a>
+                            </li>
+                            <li class="navitem">
+                                <a href="../task3/" class="nav-link">Task 3</a>
+                            </li>
+                            <li class="navitem active">
+                                <a href="./" class="nav-link">Task 4</a>
+                            </li>
+                            <li class="navitem">
+                                <a href="../task5/" class="nav-link">Task 5</a>
+                            </li>
+                        </ul>
+
+                    <ul class="nav navbar-nav ml-auto">
+                        <li class="nav-item">
+                            <a href="#" class="nav-link" data-toggle="modal" data-target="#mkdocs_search_modal">
+                                <i class="fa fa-search"></i> Search
+                            </a>
+                        </li>
+                            <li class="nav-item">
+                                <a rel="prev" href="../task3/" class="nav-link">
+                                    <i class="fa fa-arrow-left"></i> Previous
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a rel="next" href="../task5/" class="nav-link">
+                                    Next <i class="fa fa-arrow-right"></i>
+                                </a>
+                            </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <div class="container">
+            <div class="row">
+                    <div class="col-md-3"><div class="navbar-light navbar-expand-md bs-sidebar hidden-print affix" role="complementary">
+    <div class="navbar-header">
+        <button type="button" class="navbar-toggler collapsed" data-toggle="collapse" data-target="#toc-collapse" title="Table of Contents">
+            <span class="fa fa-angle-down"></span>
+        </button>
+    </div>
+
+    
+    <div id="toc-collapse" class="navbar-collapse collapse card bg-secondary">
+        <ul class="nav flex-column">
+            
+            <li class="nav-item" data-level="1"><a href="#_1" class="nav-link">Задача</a>
+              <ul class="nav flex-column">
+            <li class="nav-item" data-level="2"><a href="#_2" class="nav-link">Реализация</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+            <li class="nav-item" data-level="2"><a href="#_3" class="nav-link">Демонстрация работы</a>
+              <ul class="nav flex-column">
+              </ul>
+            </li>
+              </ul>
+            </li>
+        </ul>
+    </div>
+</div></div>
+                    <div class="col-md-9" role="main">
+
+<h1 id="_1">Задача</h1>
+<p>Реализовать двухпользовательский или многопользовательский чат. Реализация
+многопользовательского часа позволяет получить максимальное количество
+баллов.</p>
+<h2 id="_2">Реализация</h2>
+<ol>
+<li>server.py</li>
+</ol>
+<pre><code class="language-python">import socket
+import threading
+import signal
+
+clients = {}
+
+def handle_client(client_socket, username):
+    try:
+        while True:
+            message = client_socket.recv(1024).decode('utf-8')
+            if not message:
+                break
+
+            for client, user in clients.items():
+                if client != client_socket:
+                    client.send(f'{username}: {message}'.encode('utf-8'))
+
+    except Exception as e:
+        print(f&quot;Error: {e}&quot;)
+
+    finally:
+        del clients[client_socket]
+        client_socket.close()
+        print(f&quot;{username} disconnected&quot;)
+
+def main():
+    server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    server_socket.bind(('localhost', 1337))
+    server_socket.listen(5)
+    signal.signal(signal.SIGINT, signal.SIG_DFL)
+    print(&quot;Waiting for a connection...&quot;)
+
+    while True:
+        client_socket, client_address = server_socket.accept()
+        print(f&quot;Accepted connection from {client_address}&quot;)
+
+        username = client_socket.recv(1024).decode('utf-8').strip()
+        clients[client_socket] = username
+
+        client_thread = threading.Thread(target=handle_client, args=(client_socket, username))
+        client_thread.start()
+
+if __name__ == &quot;__main__&quot;:
+    main()
+</code></pre>
+<ol>
+<li>client.py</li>
+</ol>
+<pre><code class="language-python">import socket
+import threading
+
+def receive_messages(client_socket):
+    while True:
+        try:
+            incoming_message = client_socket.recv(1024).decode('utf-8')
+            if not incoming_message:
+                break
+            else:
+                print(f&quot;-{incoming_message.strip()}&quot;)
+        except Exception as e:
+            print(f&quot;Error receiving message: {e}&quot;)
+            break
+
+def main():
+    client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    client_socket.connect(('localhost', 1337))
+
+    username = input(&quot;Enter your username: &quot;)
+    client_socket.send(username.encode('utf-8'))
+
+    receive_thread = threading.Thread(target=receive_messages, args=(client_socket,))
+    receive_thread.daemon = True  # thread dies when main thread (the only non-daemon thread) exits.
+    receive_thread.start()
+
+    while True:
+        message = input(&quot;&quot;)
+        client_socket.send(message.encode('utf-8'))
+        if message.lower() == &quot;exit&quot;:
+            break
+
+    client_socket.close()
+
+if __name__ == &quot;__main__&quot;:
+    main()
+</code></pre>
+<h2 id="_3">Демонстрация работы</h2>
+<p><img alt="task41" src="https://github.com/pol3et/ITMO_ICT_WebDevelopment_2023-2024/assets/80038191/23c930f3-0468-44a3-a511-a2c45a744f0a" /></p>
+<p><img alt="task42" src="https://github.com/pol3et/ITMO_ICT_WebDevelopment_2023-2024/assets/80038191/ff072923-d338-402b-b5bc-c6b6b113857d" /></p>
+<p><img alt="task43" src="https://github.com/pol3et/ITMO_ICT_WebDevelopment_2023-2024/assets/80038191/7fea132f-f114-468f-b34e-8edf362a6692" /></p>
+<p><img alt="task44" src="https://github.com/pol3et/ITMO_ICT_WebDevelopment_2023-2024/assets/80038191/de943066-4783-4965-9ae7-f1bd87a36345" /></p></div>
+            </div>
+        </div>
+
+        <footer class="col-md-12">
+            <hr>
+            <p>Documentation built with <a href="https://www.mkdocs.org/">MkDocs</a>.</p>
+        </footer>
+        <script src="../js/jquery-3.6.0.min.js"></script>
+        <script src="../js/bootstrap.min.js"></script>
+        <script>
+            var base_url = "..",
+                shortcuts = {"help": 191, "next": 78, "previous": 80, "search": 83};
+        </script>
+        <script src="../js/base.js"></script>
+        <script src="../search/main.js"></script>
+
+        <div class="modal" id="mkdocs_search_modal" tabindex="-1" role="dialog" aria-labelledby="searchModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title" id="searchModalLabel">Search</h4>
+                <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+            </div>
+            <div class="modal-body">
+                <p>From here you can search these documents. Enter your search terms below.</p>
+                <form>
+                    <div class="form-group">
+                        <input type="search" class="form-control" placeholder="Search..." id="mkdocs-search-query" title="Type search term here">
+                    </div>
+                </form>
+                <div id="mkdocs-search-results" data-no-results-text="No results found"></div>
+            </div>
+            <div class="modal-footer">
+            </div>
+        </div>
+    </div>
+</div><div class="modal" id="mkdocs_keyboard_modal" tabindex="-1" role="dialog" aria-labelledby="keyboardModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title" id="keyboardModalLabel">Keyboard Shortcuts</h4>
+                <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+            </div>
+            <div class="modal-body">
+              <table class="table">
+                <thead>
+                  <tr>
+                    <th style="width: 20%;">Keys</th>
+                    <th>Action</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td class="help shortcut"><kbd>?</kbd></td>
+                    <td>Open this help</td>
+                  </tr>
+                  <tr>
+                    <td class="next shortcut"><kbd>n</kbd></td>
+                    <td>Next page</td>
+                  </tr>
+                  <tr>
+                    <td class="prev shortcut"><kbd>p</kbd></td>
+                    <td>Previous page</td>
+                  </tr>
+                  <tr>
+                    <td class="search shortcut"><kbd>s</kbd></td>
+                    <td>Search</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <div class="modal-footer">
+            </div>
+        </div>
+    </div>
+</div>
+
+    </body>
+</html>
